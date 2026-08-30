@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer Hub IO Games</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">Streamer Hub IO Games</a>
+        <div class="nav-links">
+            <a href="/tos">TOS</a>
+        </div>
+    </nav>
+    <main>
+        <div class="card">
+            <h1>GamerHub</h1>
+            <p>Welcome to the ultimate compilation of competitive, streamer-ready web games.</p>
+            <button id="browse-btn">Browse Games</button>
+            <div id="error-message"></div>
+        </div>
+    </main>
+
+    <script>
+        const browseBtn = document.getElementById('browse-btn');
+        const errorMessage = document.getElementById('error-message');
+
+        browseBtn.addEventListener('click', async () => {
+            errorMessage.textContent = ""; 
+            try {
+                const response = await fetch('/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'Browse Games clicked' })
+                });
+                
+                // Show explicit system-required error message regardless of backend status code
+                errorMessage.textContent = "Error: Games could not be loaded.";
+            } catch (err) {
+                errorMessage.textContent = "Error: Games could not be loaded.";
+            }
+        });
+    </script>
+</body>
+</html>

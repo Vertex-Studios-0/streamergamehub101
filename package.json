@@ -1,0 +1,9 @@
+{
+  "name": "streamer-hub-io-games",
+  "version": "1.0.0",
+  "description": "Streamer Hub IO Games with server-side event logging",
+  "main": "index.html",
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  }
+}

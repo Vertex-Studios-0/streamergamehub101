@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">Streamer Hub IO Games</a>
+    </nav>
+    <div class="console-wrapper">
+        <div id="auth-container" class="auth-panel">
+            <h2>System Authentication Required</h2>
+            <p style="margin-bottom: 1rem;">Enter your Admin Secret token to connect to live runtime logging strings.</p>
+            <input type="password" id="secret-input" placeholder="Enter ADMIN_SECRET">
+            <button id="auth-btn">Access Console</button>
+        </div>
+
+        <div id="console-container" style="display: none;">
+            <h2 style="margin-bottom: 1rem;">System Administrative Log Pipeline</h2>
+            <div class="console-log" id="log-output">Loading administrative frame context...</div>
+        </div>
+    </div>
+
+    <script>
+        let token = "";
+        let pollInterval = null;
+        const authContainer = document.getElementById('auth-container');
+        const consoleContainer = document.getElementById('console-container');
+        const logOutput = document.getElementById('log-output');
+
+        document.getElementById('auth-btn').addEventListener('click', () => {
+            token = document.getElementById('secret-input').value;
+            if(!token) return;
+            
+            authContainer.style.display = 'none';
+            consoleContainer.style.display = 'block';
+            
+            fetchLogs();
+            pollInterval = setInterval(fetchLogs, 3000); // Poll every 3 seconds
+        });
+
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/events', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) {
+                    throw new Error(res.status === 401 ? "Unauthorized Secret Token." : "Failed to hook log stream.");
+                }
+                const logs = await res.json();
+                
+                if(logs.length === 0) {
+                    logOutput.innerHTML = '<div class="log-line">[SYSTEM] Pipeline connected. Waiting for meaningful events...</div>';
+                    return;
+                }
+
+                logOutput.innerHTML = logs.map(log => {
+                    // Simple mask formatting for visibility protection inside administrative panel viewports
+                    const maskedIp = log.ip ? log.ip.replace(/^(\d+)\.(\d+)\..*$/, "$1.$2.xxx.xxx") : "Unknown";
+                    return `<div class="log-line">${log.timestamp} | Action: [${log.action}] | IP: ${maskedIp}</div>`;
+                }).join('');
+            } catch (err) {
+                logOutput.innerHTML = `<div class="log-line" style="color:var(--error-color)">${err.message}</div>`;
+                clearInterval(pollInterval);
+            }
+        }
+    </script>
+</body>
+</html>

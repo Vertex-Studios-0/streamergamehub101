@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/console", "dest": "/console.html" },
+    { "src": "/tos", "dest": "/tos.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
